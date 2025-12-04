@@ -66,6 +66,8 @@ Optional man page:
 Docs site: built with MkDocs + Material (`mkdocs.yml`, content in `docs/`). Repo: https://github.com/frwickst/git-extract.
 CI: see `.github/workflows/ci.yml` (fmt, clippy, tests, macOS arm64 + Linux musl builds, docs build, artifacts, Pages deploy).
 
+Note: this application codebase was generated entirely by AI.
+
 Workflow:
 1. Tool lists commits on current branch since merge-base with base.
 2. Opens a routing file:
