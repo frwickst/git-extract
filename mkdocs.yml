@@ -11,7 +11,7 @@ theme:
     - scheme: default
       primary: indigo
       accent: teal
-repo_url: https://github.com/your/repo
+repo_url: https://github.com/frwickst/git-extract
 nav:
   - Overview: index.md
   - Usage: usage.md

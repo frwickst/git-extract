@@ -63,8 +63,8 @@ Optional man page:
 - Install `docs/git-extract.1` to your man path, e.g. `sudo cp docs/git-extract.1 /usr/local/share/man/man1/`
 - Then `git help extract` will show the man page.
 
-Docs site: built with MkDocs + Material (`mkdocs.yml`, content in `docs/`).
-CI: see `.github/workflows/ci.yml` (fmt, clippy, tests, macOS arm64 + Linux musl builds, docs build, artifacts).
+Docs site: built with MkDocs + Material (`mkdocs.yml`, content in `docs/`). Repo: https://github.com/frwickst/git-extract.
+CI: see `.github/workflows/ci.yml` (fmt, clippy, tests, macOS arm64 + Linux musl builds, docs build, artifacts, Pages deploy).
 
 Workflow:
 1. Tool lists commits on current branch since merge-base with base.
