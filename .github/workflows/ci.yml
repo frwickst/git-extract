@@ -5,6 +5,12 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   lint-test:
@@ -92,8 +98,15 @@ jobs:
         run: pip install mkdocs-material
       - name: Build docs
         run: mkdocs build
-      - name: Upload docs site
-        uses: actions/upload-artifact@v4
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          name: site
           path: site
+
+  deploy-pages:
+    needs: [docs]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
