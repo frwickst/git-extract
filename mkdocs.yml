@@ -1,0 +1,20 @@
+site_name: git-extract
+site_description: Multi-Branch Commit Extractor
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.tabs
+    - content.code.copy
+    - toc.follow
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: teal
+repo_url: https://github.com/your/repo
+nav:
+  - Overview: index.md
+  - Usage: usage.md
+  - Architecture: architecture.md
+  - Contributing: contributing.md
+  - Manpage: git-extract.1

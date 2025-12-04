@@ -1,0 +1,63 @@
+.TH GIT-EXTRACT 1 "December 2025" "git-extract" "User Commands"
+.SH NAME
+git-extract \- split a branch into multiple branches via an interactive routing file
+.SH SYNOPSIS
+.B git extract
+[OPTIONS] [TARGET ...]
+.SH DESCRIPTION
+git-extract lets you route commits from the current branch into one or more target branches in a single pass. It opens a routing file that lists commits and lets you assign each to a target. Missing target branches are created from a base; commits are cherry-picked in order.
+
+On conflict, the tool leaves a temporary worktree in place, writes state to
+.B .git/extract-state.json
+, and stops. Resolve conflicts in that worktree, stage fixes, then run
+.B git extract --continue
+to resume (or
+.B git extract --abort
+to cancel).
+.SH OPTIONS
+.TP
+.B --base <branch>
+Base branch/commit for new branches (default: main/master fallback, else HEAD).
+.TP
+.B --targets <list>
+Predefine targets (comma- or space-separated). Merges with positional TARGETs.
+.TP
+.B TARGET ...
+Positional targets to prepopulate the routing file.
+.TP
+.B --default-current / --no-current
+Keep (default) or drop unassigned commits.
+.TP
+.B --editor <cmd>
+Override editor (order: --editor > GIT_SEQUENCE_EDITOR > GIT_EDITOR > core.editor > VISUAL > EDITOR > vi).
+.TP
+.B --dry-run
+Render/validate only; no branch updates.
+.TP
+.B --allow-dirty
+Skip clean-worktree check.
+.TP
+.B --routing-file <path>
+Use a pre-edited routing file (automation/tests).
+.TP
+.B --continue
+Resume after conflicts using saved state/worktree.
+.TP
+.B --abort
+Abort an in-progress session, remove worktree/state.
+.TP
+.B --no-chdir-conflict
+Do not auto-chdir into the conflict worktree during --continue/--abort.
+.SH FILES
+.TP
+.B .git/extract-state.json
+Session state for conflict resume/abort.
+.SH EXAMPLES
+.TP
+Route commits to feature branches
+.B git extract feature1 feature2
+.TP
+Continue after fixing conflicts
+.B git extract --continue
+.SH SEE ALSO
+git-worktree(1), git-cherry-pick(1)

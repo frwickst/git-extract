@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+          override: true
+      - name: fmt
+        run: cargo fmt -- --check
+      - name: clippy
+        run: cargo clippy -- -D warnings
+      - name: test
+        run: cargo test
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install rustup target
+        run: rustup target add x86_64-unknown-linux-musl
+      - name: Build (musl)
+        env:
+          LIBGIT2_SYS_USE_PKG_CONFIG: 0
+          OPENSSL_STATIC: 1
+          RUSTFLAGS: -C target-feature=+crt-static
+        run: cargo build --release --target x86_64-unknown-linux-musl
+      - name: Upload linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-extract-linux-musl
+          path: target/x86_64-unknown-linux-musl/release/git-extract
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build (arm64)
+        run: cargo build --release
+      - name: Upload mac artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-extract-macos-arm64
+          path: target/release/git-extract
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install mkdocs
+        run: pip install mkdocs-material
+      - name: Build docs
+        run: mkdocs build
+      - name: Upload docs site
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site
