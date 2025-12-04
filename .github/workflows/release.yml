@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install musl toolchain
+        run: sudo apt-get update && sudo apt-get install -y musl-tools musl-dev
+      - name: Install target
+        run: rustup target add x86_64-unknown-linux-musl
+      - name: Build (linux musl)
+        env:
+          LIBGIT2_SYS_USE_PKG_CONFIG: 0
+          OPENSSL_STATIC: 1
+          ZLIB_SOURCE: 1
+          RUSTFLAGS: -C target-feature=+crt-static
+          CC_x86_64_unknown_linux_musl: x86_64-linux-musl-gcc
+          AR_x86_64_unknown_linux_musl: ar
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER: x86_64-linux-musl-gcc
+        run: cargo build --release --target x86_64-unknown-linux-musl
+      - name: Upload release asset (linux musl)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/x86_64-unknown-linux-musl/release/git-extract
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build (macOS arm64)
+        run: cargo build --release
+      - name: Upload release asset (macOS arm64)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/release/git-extract
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
