@@ -33,10 +33,12 @@ jobs:
           AR_x86_64_unknown_linux_musl: ar
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER: x86_64-linux-musl-gcc
         run: cargo build --release --target x86_64-unknown-linux-musl
+      - name: Rename binary
+        run: cp target/x86_64-unknown-linux-musl/release/git-extract git-extract-linux-x86_64-musl
       - name: Upload release asset (linux musl)
         uses: softprops/action-gh-release@v1
         with:
-          files: target/x86_64-unknown-linux-musl/release/git-extract
+          files: git-extract-linux-x86_64-musl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -53,9 +55,11 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build (macOS arm64)
         run: cargo build --release
+      - name: Rename binary
+        run: cp target/release/git-extract git-extract-macos-arm64
       - name: Upload release asset (macOS arm64)
         uses: softprops/action-gh-release@v1
         with:
-          files: target/release/git-extract
+          files: git-extract-macos-arm64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
