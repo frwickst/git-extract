@@ -286,24 +286,23 @@ fn resolve_editor(args: &Args, repo: &Repository) -> String {
         return e.clone();
     }
     for var in ["GIT_SEQUENCE_EDITOR", "GIT_EDITOR"] {
-        if let Ok(v) = std::env::var(var) {
-            if !v.trim().is_empty() {
-                return v;
-            }
+        if let Ok(v) = std::env::var(var)
+            && !v.trim().is_empty()
+        {
+            return v;
         }
     }
-    if let Ok(cfg) = repo.config() {
-        if let Ok(v) = cfg.get_string("core.editor") {
-            if !v.trim().is_empty() {
-                return v;
-            }
-        }
+    if let Ok(cfg) = repo.config()
+        && let Ok(v) = cfg.get_string("core.editor")
+        && !v.trim().is_empty()
+    {
+        return v;
     }
     for var in ["VISUAL", "EDITOR"] {
-        if let Ok(v) = std::env::var(var) {
-            if !v.trim().is_empty() {
-                return v;
-            }
+        if let Ok(v) = std::env::var(var)
+            && !v.trim().is_empty()
+        {
+            return v;
         }
     }
     "vi".to_string()
